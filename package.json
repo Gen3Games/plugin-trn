@@ -1,17 +1,46 @@
 {
   "name": "plugin-trn",
   "version": "1.0.0",
+  "description": "ElizaOS plugin for The Root Network",
+  "type": "module",
   "main": "dist/index.js",
-  "scripts": {
-    "build": "tsup --format esm --dts",
-    "dev": "tsup --format esm --dts --watch"
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
     "tsup": "^8.4.0",
     "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "agentConfig": {
+    "pluginType": "elizaos:client:1.0.0",
+    "pluginParameters": {
+      "TRN_PRIVATE_KEY": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Your private key for the TRN chain ecosystem. Grants full access to associated funds.",
+        "optional": true
+      },
+      "TRN_PUBLIC_KEY": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Your public key for the TRN chain ecosystem.",
+        "optional": true
+      },
+      "TRN_PROVIDER_URL": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Custom RPC URL for TRN.",
+        "optional": true
+      }
+    }
   }
 }
