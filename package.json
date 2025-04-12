@@ -1,0 +1,17 @@
+{
+  "name": "plugin-trn",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup --format esm --dts",
+    "dev": "tsup --format esm --dts --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
+  }
+}
