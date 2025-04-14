@@ -4,6 +4,7 @@
   "description": "ElizaOS plugin for The Root Network",
   "type": "module",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
@@ -12,6 +13,12 @@
       "types": "./dist/index.d.ts"
     },
     "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@polkadot/api": "^10.9.1",
+    "ethers": "6.13.2",
+    "@therootnetwork/api": "^1.0.9",
+    "@futureverse/transact": "^0.5.1"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
