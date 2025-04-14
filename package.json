@@ -39,10 +39,10 @@
         "description": "Your public key for the TRN chain ecosystem.",
         "optional": true
       },
-      "TRN_PROVIDER_URL": {
+      "PUBLIC_NETWORK_SET": {
         "type": "string",
         "minLength": 1,
-        "description": "Custom RPC URL for TRN.",
+        "description": "Network either as mainnet or tesnet.",
         "optional": true
       }
     }
