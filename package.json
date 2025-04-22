@@ -1,5 +1,5 @@
 {
-  "name": "plugin-trn",
+  "name": "@elizaos-plugins/plugin-trn",
   "version": "1.0.0",
   "description": "ElizaOS plugin for The Root Network",
   "type": "module",

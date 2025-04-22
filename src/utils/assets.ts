@@ -1,4 +1,13 @@
-const assetLists = {
+import { elizaLogger } from '@elizaos/core';
+import { ApiPromise } from '@polkadot/api';
+
+type AssetDetail = {
+  id: number;
+  symbol: string;
+  decimals: number;
+};
+
+const assetListString = JSON.stringify({
   mainnet: [
     { id: 1, symbol: 'ROOT', decimals: 6 },
     { id: 2, symbol: 'XRP', decimals: 6 },
@@ -27,9 +36,52 @@ const assetLists = {
     { id: 2148, symbol: 'SepoliaUSDC', decimals: 6 },
     { id: 218212, symbol: 'GOLD', decimals: 6 },
   ],
+});
+
+type OnchainAsset = {
+  id: string;
+  deposit: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  isFrozen: boolean;
 };
 
-export function getAssetBySymbol(symbol: string, network: 'mainnet' | 'testnet'): number | null {
-  const list = assetLists[network];
-  return list.find((asset) => asset.symbol.toLowerCase() === symbol.toLowerCase())?.id ?? null;
+export async function getOnchainAsset(api: ApiPromise, assetSymbol: string): Promise<OnchainAsset | null> {
+  const assets = await api.query.assets.metadata.entries();
+  const parsedAssets: OnchainAsset[] = assets.map(([key, value]) => {
+    const id = key.args[0].toHuman() as string;
+    const metadata = value.toHuman() as {
+      deposit: string;
+      name: string;
+      symbol: string;
+      decimals: string;
+      isFrozen: boolean;
+    };
+
+    return {
+      id,
+      deposit: metadata.deposit,
+      name: metadata.name,
+      symbol: metadata.symbol,
+      decimals: parseInt(metadata.decimals, 10),
+      isFrozen: metadata.isFrozen,
+    };
+  });
+
+  const sanitizedSymbol = assetSymbol.trim().toLowerCase();
+  const match = parsedAssets.find((a) => a.symbol.toLowerCase() === sanitizedSymbol);
+
+  if (!match) {
+    return null;
+  }
+
+  return match;
+}
+
+function sanitizeSymbol(input: string): string {
+  return input
+    .replace(/[^\x20-\x7E]/g, '')
+    .trim()
+    .toLowerCase();
 }

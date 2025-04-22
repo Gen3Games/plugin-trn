@@ -20,7 +20,7 @@ TRN_PUBLIC_KEY=your-public-address-here
 You can choose between **mainnet** and **testnet** via:
 
 ```env
-NEXT_PUBLIC_NETWORK_SET=mainnet  # or testnet
+PUBLIC_NETWORK_SET=mainnet  # or testnet
 ```
 
 If omit it will use **mainnet**.

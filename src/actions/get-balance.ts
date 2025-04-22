@@ -9,10 +9,10 @@ import {
   type State,
 } from '@elizaos/core';
 
-import { getAssetBySymbol } from '../utils/assets';
+import { getOnchainAsset } from '../utils/assets';
 import { getTrnBalanceExamples } from '../examples/get-balance';
 import { getTrnBalanceTemplate } from '../templates';
-import { getApi } from '../utils/trn';
+import { convertBigIntToDecimal, getApi } from '../utils/trn';
 import { ApiPromise } from '@polkadot/api';
 import { AccountAssetDetails, BalanceContent, FrameSystemAccountInfo } from '../types';
 
@@ -26,6 +26,14 @@ function isBalanceContent(runtime: IAgentRuntime, content: any): content is Bala
 export const getBalanceAction = {
   name: 'getBalance',
   description: 'Get balance of a TRN asset for the given address',
+  similes: ['GET_BALANCE', 'CHECK_BALANCE'],
+  validate: async (_runtime: IAgentRuntime, message: Memory) => {
+    // Always return true for token transfers, letting the handler deal with specifics
+    elizaLogger.log('Validating get balance from user:', message.userId);
+    return true;
+  },
+  template: getTrnBalanceTemplate,
+  examples: getTrnBalanceExamples,
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -33,8 +41,6 @@ export const getBalanceAction = {
     _options: Record<string, unknown>,
     callback?: HandlerCallback
   ) => {
-    elizaLogger.log('Starting getBalance action...');
-
     let currentState = state;
     if (!currentState) {
       currentState = (await runtime.composeState(message)) as State;
@@ -68,41 +74,50 @@ export const getBalanceAction = {
     const address = content.address!;
 
     try {
-      const assetId = typeof token === 'string' ? await getAssetBySymbol(token, network) : token;
-      if (!assetId) {
+      const trnApi = await getApi(network);
+      const api = trnApi as ApiPromise;
+
+      const onchainAsset = await getOnchainAsset(api, token.toString());
+
+      if (!onchainAsset) {
         const errorMsg = `Token '${token}' is not recognized on ${network}`;
         elizaLogger.error(errorMsg);
         callback?.({ text: errorMsg, content: { token, error: errorMsg } });
         return false;
       }
-      const trnApi = await getApi(network);
-      const api = trnApi as ApiPromise;
 
       let rawBalance: bigint;
-      if (assetId === 1) {
+      if (Number(onchainAsset.id) === 1) {
         const accountInfo = (await api.query.system.account(address)) as unknown as FrameSystemAccountInfo | null;
         if (!accountInfo) {
-          throw new Error(`No account info found for ${address}`);
+          callback?.({
+            text: `No account info found for ${address}`,
+            content: { address, token, balance: 0 },
+          });
         }
 
         const bigIntFree = accountInfo?.data?.free || 0n;
         const bigIntMiscFrozen = accountInfo?.data?.miscFrozen || 0n;
 
-        const bigIntBalance = BigInt(bigIntFree - bigIntMiscFrozen);
+        const bigIntBalance = BigInt(bigIntFree) - BigInt(bigIntMiscFrozen);
         rawBalance = bigIntBalance;
       } else {
         const result = (
-          await trnApi.query.assets.account(assetId, address)
-        ).toPrimitive() as unknown as unknown as AccountAssetDetails | null;
+          await trnApi.query.assets.account(Number(onchainAsset.id), address)
+        ).toPrimitive() as unknown as AccountAssetDetails | null;
         if (!result) {
-          throw new Error(`No balance found for ${token} on TRN`);
+          callback?.({
+            text: `No balance found for ${token} on TRN.`,
+            content: { address, token, balance: 0 },
+          });
+          return false;
         }
         rawBalance = BigInt(result.balance);
       }
 
       callback?.({
-        text: `${address} has ${rawBalance} ${token} on TRN.`,
-        content: { address, token, balance: rawBalance.toString() },
+        text: `${address} has ${convertBigIntToDecimal(rawBalance, 6)} ${token} on TRN.`,
+        content: { address, token, balance: convertBigIntToDecimal(rawBalance, 6) },
       });
 
       return true;
@@ -119,12 +134,4 @@ export const getBalanceAction = {
       return false;
     }
   },
-  template: getTrnBalanceTemplate,
-  validate: async (_runtime: IAgentRuntime, message: Memory) => {
-    // Always return true for token transfers, letting the handler deal with specifics
-    elizaLogger.log('Validating get balance from user:', message.userId);
-    return true;
-  },
-  examples: getTrnBalanceExamples,
-  similes: ['GET_BALANCE', 'CHECK_BALANCE'],
 };
