@@ -77,4 +77,23 @@ export const getTrnBalanceExamples: ActionExample[][] = [
       },
     },
   ],
+  [
+    {
+      user: '{{user1}}',
+      content: {
+        text: 'What is the XRP balance for 0xFFfFFfff0000000000000000000000000003FCEB',
+      },
+    },
+    {
+      user: '{{agent}}',
+      content: {
+        text: "I'll help you check XRP balance of 0xFFfFFfff0000000000000000000000000003FCEB",
+        action: 'GET_BALANCE',
+        content: {
+          address: '0xFFfFFfff0000000000000000000000000003FCEB',
+          token: 'XRP',
+        },
+      },
+    },
+  ],
 ];

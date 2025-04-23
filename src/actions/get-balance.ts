@@ -54,11 +54,15 @@ export const getBalanceAction = {
       template: getTrnBalanceTemplate,
     });
 
+    elizaLogger.info('Context for balance', getBalanceContext);
+
     const content = await generateObjectDeprecated({
       runtime,
       context: getBalanceContext,
       modelClass: ModelClass.LARGE,
     });
+
+    elizaLogger.info('Generated content for balance', content);
 
     if (!isBalanceContent(runtime, content)) {
       if (callback) {

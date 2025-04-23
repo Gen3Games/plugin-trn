@@ -70,7 +70,9 @@ export async function getOnchainAsset(api: ApiPromise, assetSymbol: string): Pro
   });
 
   const sanitizedSymbol = assetSymbol.trim().toLowerCase();
-  const match = parsedAssets.find((a) => a.symbol.toLowerCase() === sanitizedSymbol);
+  const match = parsedAssets.find(
+    (a) => a.symbol.trim().toLowerCase() === sanitizedSymbol || a.name.trim().toLowerCase() === sanitizedSymbol
+  );
 
   if (!match) {
     return null;

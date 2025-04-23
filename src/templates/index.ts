@@ -58,3 +58,20 @@ Return a JSON object like:
 }
 \`\`\`
 `;
+
+export const getTrnFuturePassTemplate = `
+{{recentMessages}}
+
+{{walletInfo}}
+
+Extract the following detail:
+- Wallet address to check. Optional. If not given, use the default TRN wallet.
+
+Return a JSON object like:
+
+\`\`\`json
+{
+  "address": string | null
+}
+\`\`\`
+`;
