@@ -63,6 +63,7 @@ export class TrnWalletProvider {
 
     return `${result.result.blockNumber}-${result.result.txIndex}`;
   }
+}
 
 export const initWalletProvider = async (runtime: IAgentRuntime): Promise<TrnWalletProvider> => {
   const privateKey = runtime.getSetting('TRN_PRIVATE_KEY');
