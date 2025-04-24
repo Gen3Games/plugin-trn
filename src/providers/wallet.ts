@@ -17,32 +17,31 @@ export class TrnWalletProvider {
     private network: 'testnet' | 'mainnet'
   ) {}
 
-  //   async getBalance(assetId: number): Promise<bigint> {
-  //     const trnApi = (await getApi(this.network)) as ApiPromise;
-  //     let rawBalance: bigint;
-  //     if (assetId === 1) {
-  //       // rawBalance = BigInt((await trnApi.rpc.assetsExt.freeBalance(assetId, targetAddress)).toJSON());
-  //       const accountInfo = (await trnApi.query.system.account(this.address)) as unknown as FrameSystemAccountInfo | null;
-  //       if (!accountInfo) {
-  //         throw new Error(`No account info found for ${this.address}`);
-  //       }
+  async getBalance(assetId: number): Promise<bigint> {
+    const trnApi = (await getApi(this.network)) as ApiPromise;
+    let rawBalance: bigint;
+    if (assetId === 1) {
+      const accountInfo = (await trnApi.query.system.account(this.address)) as unknown as FrameSystemAccountInfo | null;
+      if (!accountInfo) {
+        return 0;
+      }
 
-  //       const bigIntFree = accountInfo?.data?.free || 0n;
-  //       const bigIntMiscFrozen = accountInfo?.data?.miscFrozen || 0n;
+      const bigIntFree = accountInfo?.data?.free || 0n;
+      const bigIntMiscFrozen = accountInfo?.data?.miscFrozen || 0n;
 
-  //       const bigIntBalance = BigInt(bigIntFree - bigIntMiscFrozen);
-  //       rawBalance = bigIntBalance;
-  //     } else {
-  //       const result = (
-  //         await trnApi.query.assets.account(assetId, this.address)
-  //       ).toPrimitive() as unknown as AccountAssetDetails | null;
-  //       if (!result) {
-  //         throw new Error(`No balance found for ${this.address} on TRN`);
-  //       }
-  //       rawBalance = BigInt(result.balance);
-  //     }
-  //     return rawBalance;
-  //   }
+      const bigIntBalance = BigInt(bigIntFree - bigIntMiscFrozen);
+      rawBalance = bigIntBalance;
+    } else {
+      const result = (
+        await trnApi.query.assets.account(assetId, this.address)
+      ).toPrimitive() as unknown as AccountAssetDetails | null;
+      if (!result) {
+        return 0;
+      }
+      rawBalance = BigInt(result.balance);
+    }
+    return rawBalance;
+  }
 
   async transfer(assetId: number, to: Address, amount: string): Promise<string> {
     if (!this.signer) {
