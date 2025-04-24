@@ -39,7 +39,7 @@ const assetListString = JSON.stringify({
 });
 
 type OnchainAsset = {
-  id: string;
+  id: number;
   deposit: string;
   name: string;
   symbol: string;
@@ -47,10 +47,10 @@ type OnchainAsset = {
   isFrozen: boolean;
 };
 
-export async function getOnchainAsset(api: ApiPromise, assetSymbol: string): Promise<OnchainAsset | null> {
+export async function getOnchainSymbol(api: ApiPromise, assetSymbol: string): Promise<OnchainAsset | null> {
   const assets = await api.query.assets.metadata.entries();
   const parsedAssets: OnchainAsset[] = assets.map(([key, value]) => {
-    const id = key.args[0].toHuman() as string;
+    const id = key.args[0].toHuman() as number;
     const metadata = value.toHuman() as {
       deposit: string;
       name: string;
@@ -81,9 +81,7 @@ export async function getOnchainAsset(api: ApiPromise, assetSymbol: string): Pro
   return match;
 }
 
-function sanitizeSymbol(input: string): string {
-  return input
-    .replace(/[^\x20-\x7E]/g, '')
-    .trim()
-    .toLowerCase();
+export async function getOnchainAssetId(api: ApiPromise, assetId: number): Promise<OnchainAsset | null> {
+  const asset = (await api.query.assets.metadata(assetId)) as unknown as OnchainAsset | null;
+  return asset;
 }

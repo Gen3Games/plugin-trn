@@ -38,27 +38,6 @@ Return a JSON object like:
 \`\`\`
 `;
 
-export const trnSwapTemplate = `
-{{recentMessages}}
-
-{{walletInfo}}
-
-Extract the following details:
-- Input token (symbol or asset id).
-- Output token (symbol or asset id).
-- Amount to swap (as string).
-
-Return a JSON object like:
-
-\`\`\`json
-{
-  "inputToken": string | number,
-  "outputToken": string | number,
-  "amount": string,  
-}
-\`\`\`
-`;
-
 export const getTrnFuturePassTemplate = `
 {{recentMessages}}
 

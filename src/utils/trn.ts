@@ -3,6 +3,7 @@ import { getApiOptions, getPublicProvider } from '@therootnetwork/api';
 import { formatUnits } from 'ethers';
 import { AssetBuilder, BatchBuilder, CustomExtrinsicBuilder } from '@futureverse/transact';
 import { AccountAssetDetails, FrameSystemAccountInfo } from '../types';
+import { ethers } from 'ethers';
 
 export async function getApi(networkSet?: 'mainnet' | 'testnet'): Promise<ApiPromise> {
   if (!networkSet) networkSet = process.env.NEXT_PUBLIC_NETWORK_SET as 'mainnet' | 'testnet';
@@ -34,6 +35,18 @@ export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export const convertBigIntToDecimal = (num: bigint, decimals: number): number => {
   return parseFloat(formatUnits(num.toString(), decimals));
+};
+
+export const convertDecimalToBigInt = (num: number | string, decimals: number): bigint => {
+  let numStr = typeof num === 'string' ? num : num.toFixed(decimals);
+  if (typeof num === 'string') {
+    const decimalIndex = numStr.indexOf('.');
+    if (decimalIndex !== -1 && numStr.length - decimalIndex - 1 > decimals) {
+      numStr = parseFloat(numStr).toFixed(decimals);
+    }
+  }
+
+  return ethers.parseUnits(numStr, decimals);
 };
 
 type FeeValidationResult = { success: boolean; error?: string };

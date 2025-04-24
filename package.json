@@ -25,7 +25,9 @@
     "@polkadot/api": "^10.9.1",
     "ethers": "6.13.2",
     "@therootnetwork/api": "^1.0.9",
-    "@futureverse/transact": "^0.5.1"
+    "@futureverse/transact": "^0.5.1",
+    "@futureverse/signer": "^1.5.0",
+    "viem": "2.x"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
@@ -60,5 +62,13 @@
         "optional": true
       }
     }
+  },
+  "pnpm": {
+    "overrides": {
+      "viem": "2.21.58"
+    }
+  },
+  "resolutions": {
+    "viem": "2.21.58"
   }
 }

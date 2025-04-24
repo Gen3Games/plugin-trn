@@ -9,7 +9,7 @@ import {
   type State,
 } from '@elizaos/core';
 
-import { getOnchainAsset } from '../utils/assets';
+import { getOnchainSymbol, getOnchainAssetId } from '../utils/assets';
 import { getTrnBalanceExamples } from '../examples/get-balance';
 import { getTrnBalanceTemplate } from '../templates';
 import { convertBigIntToDecimal, getApi } from '../utils/trn';
@@ -81,7 +81,8 @@ export const getBalanceAction = {
       const trnApi = await getApi(network);
       const api = trnApi as ApiPromise;
 
-      const onchainAsset = await getOnchainAsset(api, token.toString());
+      const onchainAsset =
+        typeof token === 'string' ? await getOnchainSymbol(api, token) : await getOnchainAssetId(api, token);
 
       if (!onchainAsset) {
         const errorMsg = `Token '${token}' is not recognized on ${network}`;
