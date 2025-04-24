@@ -57,7 +57,7 @@ export const getFuturePassAction = {
       return false;
     }
 
-    const address = content.address;
+    const address = content.address === 'null' ? runtime.getSetting('TRN_PUBLIC_KEY') : content.address!;
 
     try {
       const trnApi = await getApi(network);
