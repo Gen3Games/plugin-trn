@@ -1,106 +1,118 @@
 # `@elizaos/plugin-trn`
 
-This plugin enables interaction with **The Root Network (TRN)** ecosystem, allowing ElizaOS agents to query balances, transfer tokens, interact with the native pallets.
+This plugin enables interaction with **The Root Network (TRN)**, allowing ElizaOS agents to query balances, fetch FuturePass identities, and send tokens through wallet-integrated handlers.
 
 ---
 
 ## Configuration
 
-### Default Setup
+### Basic Setup
 
-By default, **plugin-trn** is not active. To use it, add your **TRN public address** (or wallet) to your `.env` file. Most operations such as balance lookups or inference will work without a private key, but write operations may be limited.
+To enable this plugin, add your TRN credentials to a `.env` file:
 
 ```env
-TRN_PRIVATE_KEY=your-private-key-here
-TRN_PUBLIC_KEY=your-public-address-here
+TRN_PUBLIC_KEY=your-wallet-address-here
+TRN_PRIVATE_KEY=your-private-key-here  # optional, required for send operations
 ```
+
+> `TRN_PUBLIC_KEY` is used for read operations (e.g., checking your own balance).
+> `TRN_PRIVATE_KEY` is needed for writing actions (e.g., transfers).
 
 ### Network Selection
 
-You can choose between **mainnet** and **testnet** via:
+Choose between `mainnet` or `testnet` via:
 
 ```env
-PUBLIC_NETWORK_SET=mainnet  # or testnet
+PUBLIC_NETWORK_SET=testnet
 ```
 
-If omit it will use **mainnet**.
+Defaults to `mainnet` if not specified.
 
 ---
 
 ## Actions
 
-### Get Balance
+### `GET_BALANCE`
 
-Query the TRN balance of a token for a specific address.
+Returns the balance of a given token at a specific TRN address.
 
 **Required**:
-
-- Token symbol (e.g. `ROOT`, `XRP`, `ZRP`)
+- `token`: symbol (`ROOT`, `XRP`, etc.) or ID
 
 **Optional**:
+- `address`: if omitted, uses `TRN_PUBLIC_KEY`
 
-- Address (defaults to user wallet)
-
-**Example usage:**
+**Example usage**:
 
 ```bash
-What is the ROOT balance of my wallet?
+What is my USDC balance?
 How much XRP does 0x332895 have?
 ```
 
-### Transfer
+---
 
-Send a token to another wallet on TRN.
+### `GET_FUTUREPASS`
+
+Looks up the **FuturePass** smart wallet identity for a TRN account.
 
 **Required**:
+- `address`: TRN wallet address to query
 
-- Token
-- Amount
-- Recipient address
+**If omitted**, the agent uses `TRN_PUBLIC_KEY`.
 
-**Optional**:
-
-- Memo/message
-
-**Example usage:**
+**Example usage**:
 
 ```bash
-Send 100 ZRP to 0x19024120
-Transfer 5 ROOT to 0x19024120
+What is my FuturePass address?
+Look up FuturePass for 0xabc123
 ```
 
-### Swap
+---
 
-The swap action allows ElizaOS to request a token swap on TRN using on-chain liquidity providers.
+### `SEND_TOKEN`
 
-**Required**
+Transfers a token on TRN from the agent's wallet to a recipient.
 
-- Input token
-- Output token
-- Amount
-- Slippage (optional)
+**Required**:
+- `token`: symbol or ID
+- `amount`: string-formatted decimal
+- `recipient`: TRN address
 
-**Example usage:**
+**Returns**:
+- Confirmation message
+- Link to transaction on block explorer
+
+**Example usage**:
 
 ```bash
-Swap 100 ZRP to XRP
-Exchange 100 ZRP to XRP
+Send 5 ROOT to 0xabc123
+Transfer 120 ZRP to 0xfeedbeef
 ```
 
 ---
 
 ## Error Handling
 
-The plugin includes:
-
-- Parameter validation via `validate()`
-- Friendly error messages for missing tokens or addresses
+This plugin includes:
+- Flexible prompts and inference using ElizaOS `generateObjectDeprecated`
+- Runtime validation of tokens, addresses, and on-chain assets
+- Helpful user-facing error messages
 
 ---
 
-## Contribution
+## Internals
 
-The plugin contains typed handlers, prompt templates, and runtime support. Please add tests and examples when contributing new features.
+- Powered by TRN RPC and pallet-native calls
+- Wraps ElizaOS templates, planners, and state composition
+
+---
+
+## Contributing
+
+This plugin uses:
+- Examples (`examples/`)
+- Templates (`templates/`)
+- Typed handlers (`actions/`)
 
 ---
 
