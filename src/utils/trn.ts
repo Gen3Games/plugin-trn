@@ -104,3 +104,11 @@ export async function validateAndAddFeeProxy(
     return { success: false, error: 'Failed to validate gas fees' };
   }
 }
+
+export function returnBlockExplorer(network: 'mainnet' | 'testnet', extrensicId: string): string {
+  if (network === 'testnet') {
+    return `https://porcini.rootscan.io/extrinsics/${extrensicId}`;
+  } else {
+    return `https://rootscan.io/extrinsics/${extrensicId}`;
+  }
+}

@@ -25,7 +25,7 @@ function isBalanceContent(runtime: IAgentRuntime, content: any): content is Bala
 
 export const getBalanceAction = {
   name: 'getBalance',
-  description: 'Get balance of a TRN asset for the given address',
+  description: 'Get balance of a token or all tokens for the given address',
   similes: ['GET_BALANCE', 'CHECK_BALANCE'],
   validate: async (_runtime: IAgentRuntime, message: Memory) => {
     // Always return true for token transfers, letting the handler deal with specifics
@@ -54,15 +54,11 @@ export const getBalanceAction = {
       template: getTrnBalanceTemplate,
     });
 
-    elizaLogger.info('Context for balance', getBalanceContext);
-
     const content = await generateObjectDeprecated({
       runtime,
       context: getBalanceContext,
       modelClass: ModelClass.LARGE,
     });
-
-    elizaLogger.info('Generated content for balance', content);
 
     if (!isBalanceContent(runtime, content)) {
       if (callback) {
@@ -75,7 +71,7 @@ export const getBalanceAction = {
     }
 
     const token = content.token!;
-    const address = content.address!;
+    const address = content.address === 'null' ? runtime.getSetting('TRN_PUBLIC_KEY') : content.address!;
 
     try {
       const trnApi = await getApi(network);

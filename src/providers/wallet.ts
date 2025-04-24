@@ -4,7 +4,7 @@ import { elizaLogger } from '@elizaos/core';
 import type { Address } from 'viem';
 import { getApi, validateAndAddFeeProxy } from '../utils/trn';
 import { ApiPromise } from '@polkadot/api';
-// import { AccountAssetDetails, FrameSystemAccountInfo } from '../types';
+import { AccountAssetDetails, FrameSystemAccountInfo } from '../types';
 import { Signer, ViemSigner } from '@futureverse/signer';
 import { TransactionBuilder } from '@futureverse/transact';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -23,7 +23,7 @@ export class TrnWalletProvider {
     if (assetId === 1) {
       const accountInfo = (await trnApi.query.system.account(this.address)) as unknown as FrameSystemAccountInfo | null;
       if (!accountInfo) {
-        return 0;
+        return 0n;
       }
 
       const bigIntFree = accountInfo?.data?.free || 0n;
@@ -36,7 +36,7 @@ export class TrnWalletProvider {
         await trnApi.query.assets.account(assetId, this.address)
       ).toPrimitive() as unknown as AccountAssetDetails | null;
       if (!result) {
-        return 0;
+        return 0n;
       }
       rawBalance = BigInt(result.balance);
     }
@@ -48,7 +48,6 @@ export class TrnWalletProvider {
       throw new Error('Signer is not initialized');
     }
     const trnApi = (await getApi(this.network)) as ApiPromise;
-    const signer = this.signer;
 
     const transaction = TransactionBuilder.asset(trnApi, this.signer, this.address, assetId);
     transaction.transfer({
@@ -61,31 +60,9 @@ export class TrnWalletProvider {
       throw new Error('Insufficient funds to cover gas fees, in both XRP & ROOT');
     }
     const result = await transaction.signAndSend();
-    return result.toString();
+
+    return `${result.result.blockNumber}-${result.result.txIndex}`;
   }
-
-  //   //   async swap(inputSymbol: string, outputSymbol: string, amount: string): Promise<string> {
-  //   //     // Placeholder logic for swapping via future DEX pallet
-  //   //     const network = process.env.NEXT_PUBLIC_NETWORK_SET === 'mainnet' ? 'mainnet' : 'testnet';
-  //   //     const input = getAssetBySymbol(inputSymbol, network);
-  //   //     const output = getAssetBySymbol(outputSymbol, network);
-
-  //   //     if (!input || !output) {
-  //   //       throw new Error('Invalid token symbols for swap');
-  //   //     }
-
-  //   //     const trnApi = (await getApi(this.network)) as ApiPromise;
-  //   //     const signer = this.runtime.get('trnSigner');
-  //   //     const tx = trnApi.tx.dex.swap(
-  //   //       input.id,
-  //   //       output.id,
-  //   //       BigInt(Number(amount) * 10 ** input.decimals),
-  //   //       0 // slippage param can be passed here
-  //   //     );
-  //   //     const result = await tx.signAndSend(signer);
-  //   //     return result.toString();
-  //   //   }
-}
 
 export const initWalletProvider = async (runtime: IAgentRuntime): Promise<TrnWalletProvider> => {
   const privateKey = runtime.getSetting('TRN_PRIVATE_KEY');

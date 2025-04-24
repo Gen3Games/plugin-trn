@@ -9,7 +9,7 @@ import {
   type State,
 } from '@elizaos/core';
 
-import { convertDecimalToBigInt, getApi } from '../utils/trn';
+import { convertDecimalToBigInt, getApi, returnBlockExplorer } from '../utils/trn';
 import { getOnchainSymbol, getOnchainAssetId } from '../utils/assets';
 import { sendTokenExamples } from '../examples/transfer-token';
 import { initWalletProvider } from '../providers/wallet';
@@ -62,8 +62,6 @@ export const sendTokenAction = {
       modelClass: ModelClass.LARGE,
     });
 
-    elizaLogger.info('Generated content for send_token', content);
-
     if (!isTransferContent(content)) {
       callback?.({
         text: 'Missing recipient, token, or amount to complete the transfer.',
@@ -94,9 +92,11 @@ export const sendTokenAction = {
 
       const amountBigInt = convertDecimalToBigInt(amount, onchainAsset.decimals);
       const walletProvider = await initWalletProvider(runtime);
-      await walletProvider.transfer(onchainAsset.id, recipient, amountBigInt.toString());
+      const extrensicId = await walletProvider.transfer(onchainAsset.id, recipient, amountBigInt.toString());
       callback?.({
-        text: `Sent ${content.amount} ${content.token} to ${content.recipient}.`,
+        text: `Sent ${content.amount} ${content.token} to ${
+          content.recipient
+        }. Check out transaction details: ${returnBlockExplorer(network, extrensicId)}`,
         content: {
           recipient: content.recipient,
           token: content.token,

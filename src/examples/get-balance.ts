@@ -5,16 +5,74 @@ export const getTrnBalanceExamples: ActionExample[][] = [
     {
       user: '{{user1}}',
       content: {
-        text: "What's your ROOT holdings?",
+        text: 'Check my balance of USDT',
       },
     },
     {
       user: '{{agent}}',
       content: {
-        text: 'Let me check my ROOT balance.',
+        text: "I'll help you check your balance of USDT",
         action: 'GET_BALANCE',
         content: {
-          token: 'ROOT',
+          address: '{{walletAddress}}',
+          token: 'USDT',
+        },
+      },
+    },
+  ],
+  [
+    {
+      user: '{{user1}}',
+      content: {
+        text: 'Check my balance of token 0x1234',
+      },
+    },
+    {
+      user: '{{agent}}',
+      content: {
+        text: "I'll help you check your balance of token 0x1234",
+        action: 'GET_BALANCE',
+        content: {
+          address: '{{walletAddress}}',
+          token: '0x1234',
+        },
+      },
+    },
+  ],
+  [
+    {
+      user: '{{user1}}',
+      content: {
+        text: 'Get USDC balance of 0x1234',
+      },
+    },
+    {
+      user: '{{agent}}',
+      content: {
+        text: "I'll help you check USDC balance of 0x1234",
+        action: 'GET_BALANCE',
+        content: {
+          address: '0x1234',
+          token: 'USDC',
+        },
+      },
+    },
+  ],
+  [
+    {
+      user: '{{user1}}',
+      content: {
+        text: 'Check my wallet balance on TRN',
+      },
+    },
+    {
+      user: '{{agent}}',
+      content: {
+        text: "I'll help you check your wallet balance on TRN",
+        action: 'GET_BALANCE',
+        content: {
+          address: '{{walletAddress}}',
+          token: undefined,
         },
       },
     },
@@ -48,7 +106,7 @@ export const getTrnBalanceExamples: ActionExample[][] = [
     {
       user: '{{agent}}',
       content: {
-        text: "I'll help you check ROOT balance of 0x1234",
+        text: "I'll help you check token 208120 balance of 0x1234",
         action: 'GET_BALANCE',
         content: {
           address: '0x1234',
@@ -80,15 +138,16 @@ export const getTrnBalanceExamples: ActionExample[][] = [
     {
       user: '{{user1}}',
       content: {
-        text: "What's your balance of ROOT?",
+        text: 'Check my ROOT balance',
       },
     },
     {
       user: '{{agent}}',
       content: {
-        text: "I'll check my ROOT balance.",
+        text: "I'll check your ROOT balance.",
         action: 'GET_BALANCE',
         content: {
+          address: '{{walletAddress}}',
           token: 'ROOT',
         },
       },
@@ -98,15 +157,16 @@ export const getTrnBalanceExamples: ActionExample[][] = [
     {
       user: '{{user1}}',
       content: {
-        text: 'How much XRP do you have?',
+        text: 'How much XRP do I have?',
       },
     },
     {
       user: '{{agent}}',
       content: {
-        text: 'Let me check my XRP balance.',
+        text: 'Let me check your XRP balance.',
         action: 'GET_BALANCE',
         content: {
+          address: '{{walletAddress}}',
           token: 'XRP',
         },
       },

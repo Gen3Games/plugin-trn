@@ -33,7 +33,7 @@ Return a JSON object like:
 {
   "token": string | number | null,
   "amount": string | null,
-  "toAddress": string | null,
+  "recipient": string | null,
 }
 \`\`\`
 `;
